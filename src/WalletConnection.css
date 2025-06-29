@@ -1,0 +1,147 @@
+/* Wallet Connection Styles */
+.wallet-connection {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.wallet-status {
+  text-align: center;
+}
+
+.wallet-status h3 {
+  margin: 0 0 8px 0;
+  color: #333;
+}
+
+.wallet-status p {
+  margin: 0 0 20px 0;
+  color: #666;
+}
+
+.connect-btn {
+  background: #4a90e2;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 16px;
+  transition: background 0.2s ease;
+}
+
+.connect-btn:hover {
+  background: #357abd;
+}
+
+.connector-options {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 300px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.connector-btn {
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  padding: 12px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.connector-btn:hover:not(:disabled) {
+  background: #e9ecef;
+  border-color: #adb5bd;
+}
+
+.connector-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.wallet-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+.wallet-details {
+  flex: 1;
+}
+
+.wallet-address {
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: #333;
+}
+
+.admin-status {
+  font-size: 14px;
+  color: #333;
+}
+
+.role-badge {
+  margin-left: 8px;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.role-badge.admin {
+  background: #d4edda;
+  color: #155724;
+}
+
+.role-badge.user {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.disconnect-btn {
+  background: #dc3535;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.2s ease;
+}
+
+.disconnect-btn:hover {
+  background: #c82333;
+}
+
+.access-warning {
+  margin-top: 16px;
+  padding: 12px;
+  background: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffeaa7;
+  border-radius: 6px;
+  text-align: center;
+  font-weight: 500;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .wallet-info {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .disconnect-btn {
+    width: 100%;
+  }
+}
+

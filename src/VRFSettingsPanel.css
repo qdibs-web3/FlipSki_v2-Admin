@@ -1,0 +1,282 @@
+/* VRF Settings Panel Styles */
+.vrf-settings-panel {
+  background: white;
+  border-radius: 8px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 24px;
+}
+
+.panel-header {
+  margin-bottom: 24px;
+  border-bottom: 2px solid #f0f0f0;
+  padding-bottom: 16px;
+}
+
+.panel-header h3 {
+  margin: 0 0 8px 0;
+  color: #333;
+  font-size: 20px;
+}
+
+.panel-header p {
+  margin: 0;
+  color: #666;
+  font-size: 14px;
+}
+
+.vrf-config-section h4 {
+  margin: 24px 0 16px 0;
+  color: #333;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.config-item {
+  margin-bottom: 20px;
+  padding: 16px;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  background: #fafafa;
+}
+
+.config-item label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #333;
+  font-size: 14px;
+}
+
+.input-group {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.address-input,
+.number-input,
+.select-input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 2px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  font-family: 'Courier New', monospace;
+}
+
+.address-input {
+  font-size: 12px;
+}
+
+.select-input {
+  font-family: inherit;
+}
+
+.address-input:focus,
+.number-input:focus,
+.select-input:focus {
+  outline: none;
+  border-color: #4a90e2;
+}
+
+.update-btn {
+  padding: 8px 16px;
+  background: #4a90e2;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  min-width: 80px;
+}
+
+.update-btn:hover:not(:disabled) {
+  background: #357abd;
+}
+
+.update-btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.config-item small {
+  display: block;
+  color: #666;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.advanced-section {
+  margin-top: 24px;
+  border-top: 1px solid #e0e0e0;
+  padding-top: 16px;
+}
+
+.toggle-advanced {
+  background: none;
+  border: none;
+  color: #4a90e2;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 8px 0;
+}
+
+.toggle-advanced:hover {
+  color: #357abd;
+}
+
+.advanced-settings {
+  margin-top: 16px;
+  padding-left: 16px;
+  border-left: 3px solid #4a90e2;
+}
+
+.bulk-update-section {
+  margin-top: 24px;
+  padding: 16px;
+  background: #f8f9fa;
+  border-radius: 6px;
+  text-align: center;
+}
+
+.bulk-update-btn {
+  padding: 12px 24px;
+  background: #28a745;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.bulk-update-btn:hover:not(:disabled) {
+  background: #218838;
+}
+
+.bulk-update-btn:disabled {
+  background: #6c757d;
+  cursor: not-allowed;
+}
+
+.preset-section {
+  margin-top: 24px;
+  padding: 16px;
+  background: #e8f4fd;
+  border-radius: 6px;
+}
+
+.preset-section h4 {
+  margin: 0 0 12px 0;
+  color: #333;
+}
+
+.preset-buttons {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.preset-btn {
+  padding: 10px 16px;
+  background: #17a2b8;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.preset-btn:hover {
+  background: #138496;
+}
+
+.status-section {
+  margin-top: 24px;
+  padding: 16px;
+  background: #f8f9fa;
+  border-radius: 6px;
+}
+
+.status-section h4 {
+  margin: 0 0 12px 0;
+  color: #333;
+}
+
+.status-indicators {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.status-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.status-item.valid .status-dot {
+  background: #28a745;
+}
+
+.status-item.invalid .status-dot {
+  background: #dc3545;
+}
+
+.status-item.valid {
+  color: #28a745;
+}
+
+.status-item.invalid {
+  color: #dc3545;
+}
+
+.access-denied {
+  text-align: center;
+  padding: 40px 20px;
+  color: #666;
+}
+
+.access-denied h3 {
+  color: #dc3545;
+  margin-bottom: 12px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .vrf-settings-panel {
+    padding: 16px;
+  }
+  
+  .input-group {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .preset-buttons {
+    flex-direction: column;
+  }
+  
+  .preset-btn {
+    width: 100%;
+  }
+  
+  .status-indicators {
+    gap: 12px;
+  }
+}
+
