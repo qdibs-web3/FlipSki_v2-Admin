@@ -9,15 +9,50 @@ const VRFSettings = ({ vrfConfig, isLoading, isAdmin, contract, onSuccess, onErr
     confirmations: ''
   });
 
+  // Helper function to safely stringify objects with BigInt
+  const safeStringify = (obj) => {
+    return JSON.stringify(obj, (key, value) =>
+      typeof value === 'bigint' ? value.toString() + 'n' : value
+    );
+  };
+
+  // Debug logging
+  useEffect(() => {
+    console.log('VRFSettings received props:', {
+      vrfConfig: vrfConfig ? safeStringify(vrfConfig) : 'undefined',
+      isLoading,
+      isAdmin,
+      hasContract: !!contract
+    });
+  }, [vrfConfig, isLoading, isAdmin, contract]);
+
   // Update local state when vrfConfig changes
   useEffect(() => {
     if (vrfConfig) {
+      console.log('Updating VRF settings from config:', safeStringify(vrfConfig));
+      
+      // Handle both array and object formats
+      let configData;
+      if (Array.isArray(vrfConfig)) {
+        // If vrfConfig is an array (from contract call)
+        configData = {
+          vrfCoordinator: vrfConfig[0],
+          subscriptionId: vrfConfig[1],
+          keyHash: vrfConfig[2],
+          callbackGasLimit: vrfConfig[3],
+          requestConfirmations: vrfConfig[4]
+        };
+      } else {
+        // If vrfConfig is already an object
+        configData = vrfConfig;
+      }
+
       setSettings({
-        coordinator: vrfConfig.vrfCoordinator || '',
-        subscriptionId: vrfConfig.subscriptionId?.toString() || '',
-        keyHash: vrfConfig.keyHash || '',
-        gasLimit: vrfConfig.callbackGasLimit?.toString() || '',
-        confirmations: vrfConfig.requestConfirmations?.toString() || ''
+        coordinator: configData.vrfCoordinator || '',
+        subscriptionId: configData.subscriptionId?.toString() || '',
+        keyHash: configData.keyHash || '',
+        gasLimit: configData.callbackGasLimit?.toString() || '',
+        confirmations: configData.requestConfirmations?.toString() || ''
       });
     }
   }, [vrfConfig]);
@@ -96,7 +131,9 @@ const VRFSettings = ({ vrfConfig, isLoading, isAdmin, contract, onSuccess, onErr
     return (
       <div>
         <h3 className="section-title">🎲 VRF Settings</h3>
-        <p>Loading VRF configuration...</p>
+        <div className="loading-state">
+          <p>Loading VRF configuration...</p>
+        </div>
       </div>
     );
   }
@@ -113,15 +150,18 @@ const VRFSettings = ({ vrfConfig, isLoading, isAdmin, contract, onSuccess, onErr
             type="text" 
             value={settings.coordinator} 
             onChange={(e) => setSettings({...settings, coordinator: e.target.value})}
-            placeholder="0x..."
+            placeholder={
+              Array.isArray(vrfConfig) ? vrfConfig[0] || "0x..." : 
+              vrfConfig?.vrfCoordinator || "0x..."
+            }
             className="vrf-input"
           />
           <button 
             onClick={() => handleVRFUpdate('coordinator', settings.coordinator)}
-            disabled={!isAdmin || contract.isWritePending}
+            disabled={!isAdmin || contract?.isWritePending}
             className="vrf-button"
           >
-            {contract.isWritePending ? 'Updating...' : 'Update'}
+            {contract?.isWritePending ? 'Updating...' : 'Update'}
           </button>
         </div>
         
@@ -131,15 +171,18 @@ const VRFSettings = ({ vrfConfig, isLoading, isAdmin, contract, onSuccess, onErr
             type="number" 
             value={settings.subscriptionId} 
             onChange={(e) => setSettings({...settings, subscriptionId: e.target.value})}
-            placeholder="123456"
+            placeholder={
+              Array.isArray(vrfConfig) ? vrfConfig[1]?.toString() || "123456" : 
+              vrfConfig?.subscriptionId?.toString() || "123456"
+            }
             className="vrf-input"
           />
           <button 
             onClick={() => handleVRFUpdate('subscriptionId', settings.subscriptionId)}
-            disabled={!isAdmin || contract.isWritePending}
+            disabled={!isAdmin || contract?.isWritePending}
             className="vrf-button"
           >
-            {contract.isWritePending ? 'Updating...' : 'Update'}
+            {contract?.isWritePending ? 'Updating...' : 'Update'}
           </button>
         </div>
         
@@ -160,10 +203,10 @@ const VRFSettings = ({ vrfConfig, isLoading, isAdmin, contract, onSuccess, onErr
           </select>
           <button 
             onClick={() => handleVRFUpdate('keyHash', settings.keyHash)}
-            disabled={!isAdmin || contract.isWritePending}
+            disabled={!isAdmin || contract?.isWritePending}
             className="vrf-button"
           >
-            {contract.isWritePending ? 'Updating...' : 'Update'}
+            {contract?.isWritePending ? 'Updating...' : 'Update'}
           </button>
         </div>
         
@@ -173,17 +216,20 @@ const VRFSettings = ({ vrfConfig, isLoading, isAdmin, contract, onSuccess, onErr
             type="number" 
             value={settings.gasLimit} 
             onChange={(e) => setSettings({...settings, gasLimit: e.target.value})}
-            placeholder="100000"
+            placeholder={
+              Array.isArray(vrfConfig) ? vrfConfig[3]?.toString() || "100000" : 
+              vrfConfig?.callbackGasLimit?.toString() || "100000"
+            }
             min="50000"
             max="2500000"
             className="vrf-input"
           />
           <button 
             onClick={() => handleVRFUpdate('gasLimit', settings.gasLimit)}
-            disabled={!isAdmin || contract.isWritePending}
+            disabled={!isAdmin || contract?.isWritePending}
             className="vrf-button"
           >
-            {contract.isWritePending ? 'Updating...' : 'Update'}
+            {contract?.isWritePending ? 'Updating...' : 'Update'}
           </button>
         </div>
         
@@ -193,17 +239,20 @@ const VRFSettings = ({ vrfConfig, isLoading, isAdmin, contract, onSuccess, onErr
             type="number" 
             value={settings.confirmations} 
             onChange={(e) => setSettings({...settings, confirmations: e.target.value})}
-            placeholder="3"
+            placeholder={
+              Array.isArray(vrfConfig) ? vrfConfig[4]?.toString() || "3" : 
+              vrfConfig?.requestConfirmations?.toString() || "3"
+            }
             min="1"
             max="200"
             className="vrf-input"
           />
           <button 
             onClick={() => handleVRFUpdate('confirmations', settings.confirmations)}
-            disabled={!isAdmin || contract.isWritePending}
+            disabled={!isAdmin || contract?.isWritePending}
             className="vrf-button"
           >
-            {contract.isWritePending ? 'Updating...' : 'Update'}
+            {contract?.isWritePending ? 'Updating...' : 'Update'}
           </button>
         </div>
 
@@ -216,39 +265,64 @@ const VRFSettings = ({ vrfConfig, isLoading, isAdmin, contract, onSuccess, onErr
           </div>
           <button 
             onClick={handleUpdateAll}
-            disabled={!isAdmin || contract.isWritePending}
+            disabled={!isAdmin || contract?.isWritePending}
             className="vrf-button"
             style={{ background: '#28a745' }}
           >
-            {contract.isWritePending ? 'Updating...' : 'Update All'}
+            {contract?.isWritePending ? 'Updating...' : 'Update All'}
           </button>
         </div>
       </div>
 
-      {/* Current Configuration Display */}
+      {/* Current Configuration Display - Enhanced */}
       {vrfConfig && (
         <div style={{ marginTop: '30px' }}>
-          <h4>Current Configuration</h4>
+          <h4>📋 Current VRF Configuration</h4>
           <div className="status-grid">
             <div className="status-item">
               <span className="status-label">Coordinator:</span>
               <span className="status-value" style={{ fontFamily: 'monospace', fontSize: '0.8rem' }}>
-                {vrfConfig.vrfCoordinator}
+                {(Array.isArray(vrfConfig) ? vrfConfig[0] : vrfConfig.vrfCoordinator) || 'Not set'}
               </span>
             </div>
             <div className="status-item">
               <span className="status-label">Subscription ID:</span>
-              <span className="status-value">{vrfConfig.subscriptionId?.toString()}</span>
+              <span className="status-value">
+                {(Array.isArray(vrfConfig) ? vrfConfig[1]?.toString() : vrfConfig.subscriptionId?.toString()) || 'Not set'}
+              </span>
+            </div>
+            <div className="status-item">
+              <span className="status-label">Key Hash:</span>
+              <span className="status-value" style={{ fontFamily: 'monospace', fontSize: '0.8rem' }}>
+                {(Array.isArray(vrfConfig) ? vrfConfig[2] : vrfConfig.keyHash) || 'Not set'}
+              </span>
             </div>
             <div className="status-item">
               <span className="status-label">Gas Limit:</span>
-              <span className="status-value">{vrfConfig.callbackGasLimit?.toString()}</span>
+              <span className="status-value">
+                {(Array.isArray(vrfConfig) ? vrfConfig[3]?.toString() : vrfConfig.callbackGasLimit?.toString()) || 'Not set'}
+              </span>
             </div>
             <div className="status-item">
               <span className="status-label">Confirmations:</span>
-              <span className="status-value">{vrfConfig.requestConfirmations?.toString()}</span>
+              <span className="status-value">
+                {(Array.isArray(vrfConfig) ? vrfConfig[4]?.toString() : vrfConfig.requestConfirmations?.toString()) || 'Not set'}
+              </span>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* No Config Message */}
+      {!vrfConfig && !isLoading && (
+        <div className="info-state" style={{ marginTop: '20px', padding: '15px', background: '#f8f9fa', borderRadius: '8px' }}>
+          <p>⚠️ No VRF configuration found. This could mean:</p>
+          <ul>
+            <li>The contract is not properly connected</li>
+            <li>The getVRFConfig function is not available</li>
+            <li>There's a network connectivity issue</li>
+          </ul>
+          <p>Please check your wallet connection and try refreshing.</p>
         </div>
       )}
     </div>

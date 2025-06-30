@@ -29,7 +29,25 @@ const AdminDashboard = () => {
   // Contract data hooks
   const { data: activeTokensData, isLoading: tokensLoading, refetch: refetchTokens } = contract.useGetActiveTokens();
   const { data: contractStats, isLoading: statsLoading, refetch: refetchStats } = contract.useGetContractStats();
-  const { data: vrfConfig, isLoading: vrfLoading, refetch: refetchVRF } = contract.useGetVRFConfig();
+  const { data: vrfConfig, isLoading: vrfLoading, refetch: refetchVRF, error: vrfError } = contract.useGetVRFConfig();
+
+  // Helper function to safely stringify objects with BigInt
+  const safeStringify = (obj) => {
+    return JSON.stringify(obj, (key, value) =>
+      typeof value === 'bigint' ? value.toString() + 'n' : value
+    );
+  };
+
+  // Debug VRF config
+  useEffect(() => {
+    console.log('VRF Config Debug:', {
+      vrfConfig: vrfConfig ? safeStringify(vrfConfig) : 'undefined',
+      vrfLoading,
+      vrfError: vrfError ? vrfError.message : null,
+      isConnected,
+      address
+    });
+  }, [vrfConfig, vrfLoading, vrfError, isConnected, address]);
 
   // Process tokens data
   const tokens = activeTokensData && activeTokensData[1] ? activeTokensData[1].map((config, index) => ({
@@ -118,8 +136,8 @@ const AdminDashboard = () => {
                 onClick={() => setActiveTab(tab.id)}
                 className={`tab-button ${activeTab === tab.id ? 'active' : ''}`}
               >
-                <span>{tab.icon}</span>
-                <span>{tab.label}</span>
+                <span className="tab-icon">{tab.icon}</span>
+                <span className="tab-label">{tab.label}</span>
               </button>
             ))}
           </div>
@@ -129,6 +147,13 @@ const AdminDashboard = () => {
             {/* Overview Tab */}
             {activeTab === 'overview' && (
               <div>
+                <div className="section-header">
+                  <h2 className="section-title">📊 Contract Overview</h2>
+                  <button onClick={refreshData} className="refresh-btn">
+                    🔄 Refresh Data
+                  </button>
+                </div>
+                
                 <div className="overview-stats">
                   <div className="stat-card">
                     <div className="stat-icon">🪙</div>
@@ -199,20 +224,16 @@ const AdminDashboard = () => {
                     </div>
                     <div className="status-item">
                       <span className="status-label">Wallet:</span>
-                      <span className="status-value status-connected">
-                        {address.slice(0, 6)}...{address.slice(-4)}
-                      </span>
+                      <span className="status-value status-connected">{address?.slice(0, 6)}...{address?.slice(-4)}</span>
                     </div>
                     <div className="status-item">
-                      <span className="status-label">Admin Access:</span>
-                      <span className={`status-value ${isAdmin ? 'status-connected' : 'status-disconnected'}`}>
-                        {isAdmin ? 'Granted' : 'Denied'}
-                      </span>
+                      <span className="status-label">Network:</span>
+                      <span className="status-value status-connected">Base Mainnet</span>
                     </div>
                     <div className="status-item">
-                      <span className="status-label">Data Loading:</span>
-                      <span className={`status-value ${tokensLoading || statsLoading || vrfLoading ? 'status-disconnected' : 'status-connected'}`}>
-                        {tokensLoading || statsLoading || vrfLoading ? 'Loading...' : 'Ready'}
+                      <span className="status-label">VRF Status:</span>
+                      <span className={`status-value ${vrfConfig ? 'status-connected' : 'status-loading'}`}>
+                        {vrfLoading ? 'Loading...' : vrfConfig ? 'Configured' : 'Error'}
                       </span>
                     </div>
                   </div>
@@ -234,23 +255,59 @@ const AdminDashboard = () => {
 
             {/* VRF Settings Tab */}
             {activeTab === 'vrf' && (
-              <VRFSettings
-                vrfConfig={vrfConfig}
-                isLoading={vrfLoading}
-                isAdmin={isAdmin}
-                contract={contract}
-                onSuccess={handleTransactionSuccess}
-                onError={handleTransactionError}
-              />
+              <div>
+                <div className="section-header">
+                  <h2 className="section-title">🎲 VRF Settings</h2>
+                  <button onClick={refetchVRF} className="refresh-btn">
+                    🔄 Refresh VRF Config
+                  </button>
+                </div>
+
+                {/* VRF Loading State */}
+                {vrfLoading && (
+                  <div className="loading-state">
+                    <p>Loading VRF configuration...</p>
+                  </div>
+                )}
+
+                {/* VRF Error State */}
+                {vrfError && (
+                  <div className="error-state">
+                    <p>Error loading VRF configuration: {vrfError.message}</p>
+                    <button onClick={refetchVRF} className="retry-btn">
+                      🔄 Retry
+                    </button>
+                  </div>
+                )}
+
+                {/* VRF Settings Component - This includes the Current Configuration Display */}
+                <VRFSettings
+                  vrfConfig={vrfConfig}
+                  isLoading={vrfLoading}
+                  isAdmin={isAdmin}
+                  contract={contract}
+                  onSuccess={handleTransactionSuccess}
+                  onError={handleTransactionError}
+                />
+
+                {/* REMOVED: Duplicate Current Configuration Display */}
+                {/* The VRFSettings component already includes this section */}
+
+                {/* No VRF Config Message */}
+                {!vrfLoading && !vrfError && !vrfConfig && (
+                  <div className="info-state">
+                    <p>No VRF configuration found. Please check your contract connection.</p>
+                  </div>
+                )}
+              </div>
             )}
 
             {/* Game Statistics Tab */}
             {activeTab === 'stats' && (
               <GameStats
-                contractStats={contractStats}
+                stats={contractStats}
                 tokens={tokens}
                 isLoading={statsLoading}
-                contract={contract}
                 onRefresh={refetchStats}
               />
             )}
@@ -268,12 +325,10 @@ const AdminDashboard = () => {
         </>
       )}
 
+      {/* Not Connected State */}
       {!isConnected && (
-        <div className="tab-content">
-          <div style={{ textAlign: 'center', padding: '60px 20px' }}>
-            <h3>🔗 Connect Your Wallet</h3>
-            <p>Please connect your wallet to access the admin panel.</p>
-          </div>
+        <div className="not-connected">
+          <h3>Please connect your wallet to access the admin panel</h3>
         </div>
       )}
     </div>

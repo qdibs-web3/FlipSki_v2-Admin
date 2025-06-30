@@ -1,6 +1,6 @@
 import { useAccount, useConnect, useDisconnect } from 'wagmi';
 import { useEffect, useState } from 'react';
-import '../WalletConnection.css';
+import '../styles/WalletConnection.css';
 
 const WalletConnection = ({ onWalletChange, onContractChange, onAdminStatusChange }) => {
   const { address, isConnected, isConnecting } = useAccount();
