@@ -29,7 +29,7 @@ export const config = createConfig({
 });
 
 // Contract addresses
-export const FLIPSKI_V2_CONTRACT_ADDRESS = "0x0c20CDb2ce0cAbff1e4cBA87c0D6A2EcA36c7D53";
+export const FLIPSKI_V2_CONTRACT_ADDRESS = "0x448eF253449bFfd25e19C571FE381a4b0E05e87b";
 
 // ETH address constant
 export const ETH_ADDRESS = "0x0000000000000000000000000000000000000000";
